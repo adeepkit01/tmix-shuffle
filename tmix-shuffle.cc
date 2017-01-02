@@ -279,7 +279,7 @@ std::vector<std::string> TmixShuffle::ShuffleTraces (double& scale, double& simt
       m_bpus = 1.0 * bps / 8 / concur / (1000000);
       int num_balance = 0;
       outfilelist.clear ();
-      std::map<std::string, std::ofstream*> shufFid;
+      std::map<std::string, std::string> shufFid;
       for (std::vector<std::string>::iterator it = tmixBaseCVName.begin (); it != tmixBaseCVName.end (); ++it)
         {
           int found = (int) it->find_last_of ("/\\");
@@ -288,9 +288,7 @@ std::vector<std::string> TmixShuffle::ShuffleTraces (double& scale, double& simt
           std::string tempx = std::string (str_scale);
           std::string ofname = it->substr (found + 1) + tempx + ".shuf";
           outfilelist.push_back (ofname);
-          std::ofstream x;
-          x.open (ofname.c_str (), std::ios::out | std::ios::trunc );
-          shufFid[*it] = &x;
+          shufFid[*it] = ofname;
           //(shufFid[*it]).open(ofname.c_str(), std::ios::out | std::ios::trunc );
         }
       int tracelength = 3000;
@@ -407,8 +405,10 @@ std::vector<std::string> TmixShuffle::ShuffleTraces (double& scale, double& simt
                                   for (std::vector<std::string>::iterator co = connout.begin (); co != connout.end (); ++co)
                                     {
                                       std::cout << "x printf" << co->c_str () << "\n";
-                                      std::ofstream* x = shufFid[*cvf];
-                                      *x << co->c_str () << "\n";
+                                      std::ofstream x;
+                                      x.open(shufFid[*cvf].c_str(), std::ofstream::out | std::ofstream::app);
+                                      x << co->c_str () << "\n";
+                                      x.close();
                                       std::cout << "printf\n";
                                     }
                                 }
